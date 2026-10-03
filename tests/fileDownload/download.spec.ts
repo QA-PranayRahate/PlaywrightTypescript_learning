@@ -51,16 +51,38 @@ test('open pdf on new tab', async ({ page }) => {
 
 
 
-test('frame',async({page})=>{
+test('frame', async ({ page }) => {
 
     await page.goto('https://jqueryui.com/datepicker/')
-    const frame= page.frameLocator('.demo-frame')
+    const frame = page.frameLocator('.demo-frame')
     await frame.locator('#datepicker').click()
     await page.waitForTimeout(4000)
     // const path='./screenshot/1.jpg'
-    await page.screenshot({fullPage:true})
+    await page.screenshot({ fullPage: true })
 
-  
+
 })
 
 
+
+test('simple Download with suggested file name', async ({ page }) => {
+
+const [downloadFile]=await Promise.all([
+
+    page.waitForEvent('download'),
+    page.locator('#initiateDownload').click()
+
+])
+    expect (downloadFile.suggestedFilename).toContain('sample.txt')
+    const downloadPath=`./downloads/${downloadFile.suggestedFilename}`
+    console.log(downloadPath)
+   await downloadFile.saveAs(downloadPath)
+    
+   const fileexists=fs.existsSync(downloadPath)
+   expect(fileexists).toBeTruthy()
+
+   if (fileexists){
+    fs.unlinkSync(downloadPath)
+   }
+ 
+})
