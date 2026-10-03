@@ -6,12 +6,12 @@ Web applications can store small amounts of data in the browser in several ways.
 
 | Feature | Cookies | `localStorage` | `sessionStorage` |
 | --- | --- | --- | --- |
-| Lifetime | Until the configured expiration; session cookies usually end with the browser session | Persists until cleared by the user or application | Usually ends when its tab or window is closed |
-| Scope | Domain and path; options can include subdomains | Same origin (scheme, host, and port) | Same origin and top-level browsing context (typically one tab) |
-| Sent with HTTP requests | Yes, when domain, path, security, and `SameSite` rules match | No | No |
-| Typical capacity | Small, around 4 KB per cookie | Several MB per origin; browser limits vary | Several MB per origin; browser limits vary |
+| Where it is stored / scope | In the browser; sent to matching domains and paths | In the browser for one origin (scheme, host, and port) | In the browser for one origin and one tab session |
+| Typical size | Small, about 4 KB per cookie | Larger, often around 5-10 MB per origin | Similar to `localStorage`; browser quotas vary |
+| Lifetime | Session cookie or until its configured expiration | No built-in expiration; remains until removed or browser data is cleared | Usually cleared when its tab closes; survives reloads |
+| Sent with HTTP requests | Automatically when cookie domain, path, security, and `SameSite` rules match | No | No |
 | JavaScript access | Usually, unless marked `HttpOnly` | Yes | Yes |
-| Common uses | Server sessions, preferences that the server needs, request authentication | Persistent client-side preferences and cached UI state | Temporary state for one tab or workflow |
+| Common uses | Authentication, server sessions, and preferences needed by the server | Persistent client-side preferences and cached UI state | Temporary, tab-specific state such as a multi-step form |
 
 ## Cookies
 
