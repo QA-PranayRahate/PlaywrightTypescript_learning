@@ -1,0 +1,22 @@
+[
+  {
+    "email": "laurataylor12@gmail.com",
+    "password": "test1",
+    "validity": "invalid"
+  },
+  {
+    "email": "laura.taylor1234@gmail.com",
+    "password": "test123",
+    "validity": "valid"
+  },
+  {
+    "email": "lauratay4@gmail.com",
+    "password": "t1est123",
+    "validity": "invalid"
+  },
+  {
+    "email": "laurataylor1234@gmail.com",
+    "password": "",
+    "validity": "invalid"
+  }
+]

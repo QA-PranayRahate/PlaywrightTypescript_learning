@@ -1,0 +1,5 @@
+email,password,validity
+laurataylor12@gmail.com,test1,invalid
+laura.taylor1234@gmail.com,test123,valid
+lauratay4@gmail.com,t1est123,invalid
+laurataylor1234@gmail.com,,invalid
