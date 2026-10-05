@@ -20,10 +20,8 @@ test('demo download file', async ({ page }) => {
     console.log(downloadPath)
     await download.saveAs(downloadPath)
 
-
     const fileExists = fs.existsSync(downloadPath)
     expect(fileExists).toBeTruthy()
-
 
     if (fileExists) {
         fs.unlinkSync(downloadPath)
@@ -67,22 +65,22 @@ test('frame', async ({ page }) => {
 
 test('simple Download with suggested file name', async ({ page }) => {
 
-const [downloadFile]=await Promise.all([
+    const [downloadFile] = await Promise.all([
 
-    page.waitForEvent('download'),
-    page.locator('#initiateDownload').click()
+        page.waitForEvent('download'),
+        page.locator('#initiateDownload').click()
 
-])
-    expect (downloadFile.suggestedFilename).toContain('sample.txt')
-    const downloadPath=`./downloads/${downloadFile.suggestedFilename}`
+    ])
+    expect(downloadFile.suggestedFilename).toContain('sample.txt')
+    const downloadPath = `./downloads/${downloadFile.suggestedFilename}`
     console.log(downloadPath)
-   await downloadFile.saveAs(downloadPath)
-    
-   const fileexists=fs.existsSync(downloadPath)
-   expect(fileexists).toBeTruthy()
+    await downloadFile.saveAs(downloadPath)
 
-   if (fileexists){
-    fs.unlinkSync(downloadPath)
-   }
- 
+    const fileexists = fs.existsSync(downloadPath)
+    expect(fileexists).toBeTruthy()
+
+    if (fileexists) {
+        fs.unlinkSync(downloadPath)
+    }
+
 })

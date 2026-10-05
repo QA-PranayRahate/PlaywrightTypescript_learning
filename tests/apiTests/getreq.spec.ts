@@ -33,3 +33,30 @@ test('get all products ', async ({ request }) => {
 
 })
 
+
+
+// using token generated from one test to use it in other
+
+export { }
+let token: string;//declaring token variable in global scope
+test.beforeAll('token creation', async () => {
+
+    test('', async ({ request }) => {
+
+        const res = await request.post('',{data: { username: 'x', password: 'y' }})
+        const jsondata = await res.json()
+        expect(res.status()).toBe(200)
+        token = await jsondata["token"]
+    })
+})
+
+test("post", async ({ request }) => {
+
+    const res = await request.post('baseurl.com', {
+        data: { "name": "pranay", "sd": 12 },
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    })
+})

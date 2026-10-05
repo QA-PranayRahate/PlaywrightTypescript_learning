@@ -87,9 +87,7 @@ test.describe('dropdown validation', () => {
 
         //original list
         const listoptions= dropdownoptions
-        
-
-    
+ 
     })
 
 

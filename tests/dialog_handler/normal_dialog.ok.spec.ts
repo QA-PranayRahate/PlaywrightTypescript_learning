@@ -1,19 +1,19 @@
 import { test, expect } from '@playwright/test'
 
 
-test('using waitForEvent inbuilt method', async ({ page }) => {
+// test('using waitForEvent inbuilt method', async ({ page }) => {
 
-    await page.goto('https://sdetqa.vercel.app/autoplay')
-    const popupPromise = page.waitForEvent('dialog').then(async (popup) => {
-        expect(popup.type()).toBe('alert')
-        await popup.accept()
-    })
-    await Promise.all([
-        page.getByRole('button', { name: 'Simple' }).click(),
-        popupPromise,
-    ])
+//     await page.goto('https://sdetqa.vercel.app/autoplay')
+//     const popupPromise = page.waitForEvent('dialog').then(async (popup) => {
+//         expect(popup.type()).toBe('alert')
+//         await popup.accept()
+//     })
+//     await Promise.all([
+//         page.getByRole('button', { name: 'Simple' }).click(),
+       
+//     ])
 
-})
+// })
 
 
 test('dialog handle with only accept button', async ({ page }) => {
@@ -107,4 +107,10 @@ test('dialog handle with user input (Yes/No) button, i.e.Prompt', async ({ page 
 
 })
 
+
+test('',async({page})=>{
+    await page.goto('ds')
+    page.on('dialog',(dialog) =>dialog.accept())
+    await page.locator('')
+})
 
