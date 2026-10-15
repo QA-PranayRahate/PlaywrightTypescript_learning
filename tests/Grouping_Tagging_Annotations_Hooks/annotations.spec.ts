@@ -82,7 +82,7 @@ test('Runtime Slow Example', async ({ page }) => {
 });
 
 
-//test.only():
+// test.only() focuses execution on a single test; use it locally, but do not commit it.
 
 test.only('Only Example - Using test.only()', async ({ page }) => {
     await page.goto(URL);
