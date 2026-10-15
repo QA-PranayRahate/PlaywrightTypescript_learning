@@ -30,25 +30,13 @@ test('ds',async({ page })=>{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //individual Tests
 test('filters', async ({ page }) => {
 
     await page.goto(baseurl)
     await page.getByRole('listitem').filter({ hasText: 'Product 2' }).
         getByRole('button', { name: 'Add to cart' }).click()
+        await page.waitForTimeout(3000)
 
 
 })

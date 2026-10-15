@@ -29,6 +29,7 @@ for (const { email, password, validity } of loginData) {
 
             }
 
+        await page.close()
         })
     })
 

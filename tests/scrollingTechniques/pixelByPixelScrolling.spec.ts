@@ -128,6 +128,7 @@ test('lazily scrolling ', async ({ page }) => {
     const books=  page.locator('h3').all()
     
     let previousHeight = 0
+    let init_count=0
     while (true) {
         await page.evaluate(()=>{window.scrollTo(0,document.body.scrollHeight)})
         await page.waitForTimeout(2000)
@@ -137,9 +138,10 @@ test('lazily scrolling ', async ({ page }) => {
             return document.body.scrollHeight
         })
 
-        for (const b of await books)
+        for (const book of await books)
         {
-            console.log(await b.allInnerTexts())
+            console.log(await book.allInnerTexts())
+            init_count+=1
         }
         
         console.log("----------------------")
@@ -154,6 +156,7 @@ test('lazily scrolling ', async ({ page }) => {
 
     }
     console.log('end')
-
+    console.log(init_count)
+    page.close()
 
 })

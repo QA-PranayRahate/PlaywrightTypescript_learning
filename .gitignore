@@ -10,3 +10,5 @@ playwright/.auth/
 traces/
 videos/
 screenshot/
+/storageData/
+
