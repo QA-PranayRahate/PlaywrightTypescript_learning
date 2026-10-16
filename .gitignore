@@ -11,4 +11,5 @@ traces/
 videos/
 screenshot/
 /storageData/
-
+/allure-results/
+/.screenshot/
