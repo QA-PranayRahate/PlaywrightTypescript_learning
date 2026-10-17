@@ -14,129 +14,123 @@
   <img alt="Node.js" src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
 </p>
 
-This repository is a hands-on Playwright + TypeScript practice project focused on learning browser automation, end-to-end testing, API validation, and real-world web testing patterns.
+This repository is a hands-on Playwright Test and TypeScript learning project. It contains examples of browser automation, UI and API testing, test data handling, and reporting.
 
-## What this project contains
+## Topics covered
 
-This project includes practical test cases covering:
-
-- Browser interactions and UI testing
-- Forms, inputs, radio buttons, dropdowns, and date pickers
-- Locators and page object style automation patterns
-- API testing with HTTP GET/POST requests
-- File upload and download workflows
-- Storage state and session reuse
-- LocalStorage handling
-- Data-driven tests using arrays, JSON, CSV, and Excel-like data
-- Table handling, sorting, filtering, and pagination
-- Dialog handling, tabs/windows, screenshots, traces, and videos
+- Locators, assertions, forms, inputs, radio buttons, and dropdowns
+- Date pickers, dialogs, keyboard input, scrolling, and browser tabs
+- API requests, file uploads/downloads, and web tables
+- Cookies, storage state, and local storage
+- Data-driven tests using arrays, JSON, CSV, and XLSX
+- Test grouping, tags, annotations, hooks, and retries
+- Screenshots, masking, video recording, and tracing
+- Allure reporting
 
 ## Project structure
 
 ```text
 Playwright_Typescript/
+├── .github/
+│   └── workflows/
+│       └── playwright.yml
 ├── e2e/
 │   └── example.spec.ts
+├── html-report/                # Previously generated report output
+├── storageData/
+│   └── saved_state.json
+├── testData/
+│   ├── data.csv
+│   ├── data.json
+│   └── data.xlsx
 ├── tests/
+│   ├── google.spec.ts
+│   ├── test-1.spec.ts
 │   ├── apiTests/
 │   ├── ArrayMethods/
+│   ├── codegen_testrunner/
 │   ├── DatePicker/
 │   ├── dialog_handler/
 │   ├── dropdowns/
 │   ├── fileDownload/
 │   ├── filters/
+│   ├── Grouping_Tagging_Annotations_Hooks/
 │   ├── handle_windows/
 │   ├── InputBox_RadioBtn/
 │   ├── KeyboardControls/
 │   ├── localStorage/
 │   ├── locatorsStratey/
+│   ├── reports/
 │   ├── screenshots,tracing,videos/
 │   ├── scrollingTechniques/
 │   ├── sortingAssignment/
 │   ├── StorageMechanism/
+│   ├── Svg-elements/
 │   ├── Test_Parametrization/
 │   ├── uploadfile.spec.ts/
 │   └── webtables/
-├── storageData/
-│   └── saved_state.json
-├── testData/
-│   └── data.json
+│       └── pagination/
 ├── playwright.config.ts
 ├── package.json
 ├── package-lock.json
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
-## Technologies used
+Test runs currently write Allure result files to `allure-results/`; generated output folders such as `allure-results/`, `test-results/`, `playwright-report/`, `traces/`, `videos/`, and `screenshot/` are ignored by Git. The `html-report/` directory shown above contains previously generated report output.
 
-- Playwright Test
-- TypeScript
-- Node.js
-- Faker for test data generation
-- CSV parsing utilities
-- Excel/worksheet support via xlsx
+## Requirements
 
-## Prerequisites
+- Node.js and npm
 
-Make sure you have the following installed:
+## Install
 
-- Node.js (v18 or newer recommended)
-- npm
-
-## Installation
+Install the dependencies and the Chromium browser used by the configured Playwright project:
 
 ```bash
-npm install
+npm ci
+npx playwright install chromium
 ```
 
-## Running tests
+## Run tests
 
-Run the full suite:
+Run all tests:
 
 ```bash
 npx playwright test
 ```
 
-Run a specific test file:
+Run one test file:
 
 ```bash
 npx playwright test tests/apiTests/getreq.spec.ts
 ```
 
-Run with UI mode:
+Run tests matching a title:
+
+```bash
+npx playwright test --grep "title or tag"
+```
+
+Open Playwright UI mode:
 
 ```bash
 npx playwright test --ui
 ```
 
-Open the HTML report:
+## Test reports
+
+The configured reporter is `allure-playwright`. After a test run, raw Allure results are written to `allure-results/`. To build and view an HTML Allure report, install the Allure Commandline separately, then run:
 
 ```bash
-npx playwright show-report
+allure generate allure-results --clean -o allure-report
+allure open allure-report
 ```
+
+The Playwright HTML reporter is not enabled in the current configuration. To use it instead, configure the `html` reporter in `playwright.config.ts`, then run `npx playwright show-report`.
 
 ## Notes
 
-- The project is designed for learning and experimentation.
-- Most tests are written to demonstrate different Playwright capabilities in a practical way.
-- Some examples use public demo websites and browser automation flows for training purposes.
-
-## Learning goals
-
-This repository is useful for understanding:
-
-- how to write Playwright tests in TypeScript
-- how to locate and interact with web elements
-- how to handle dynamic pages and common UI interactions
-- how to validate API responses
-- how to manage authentication and state reuse
-- how to structure automation tests for maintainability
-
-## License
-
-This project is intended for learning and demo purposes.
-
----
-
-Built as a Playwright TypeScript learning playground for practicing modern browser automation and test automation concepts.
+- This is a learning project; tests demonstrate Playwright features against public demo websites.
+- Some tests rely on the availability and behavior of external websites and may need updates if those sites change.
+- Authentication examples may depend on local storage-state files under `storageData/`.
+- The GitHub Actions workflow in `.github/workflows/playwright.yml` runs the Playwright test command on pushes and pull requests to `main` and `master`.
