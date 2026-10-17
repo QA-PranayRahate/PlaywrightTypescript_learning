@@ -1,82 +1,76 @@
-# Cookies, Local Storage, and Session Storage
+# Cookies and browser storage
 
-Web applications can store small amounts of data in the browser in several ways. The right choice depends on who needs the data, how long it should last, and whether it needs to be sent to a server.
+This folder demonstrates browser cookies and how a browser context can reuse cookies between visits. For Playwright's reusable storage-state file (cookies plus local storage), see the companion [localStorage topic](../localStorage/README.md).
 
-## At a Glance
+## Files in this topic
 
-| Feature | Cookies | `localStorage` | `sessionStorage` |
+- `cookies.spec.ts` creates a browser context, navigates to a site, adds a cookie, inspects cookies, and clears them.
+- `working_with_real_website_cookies.spec.ts` logs into a demo app, writes cookies to JSON, and loads them in a fresh context.
+- `openHrm.spec.ts` saves cookies from an OrangeHRM login and checks the restored session in another test.
+
+## Browser storage at a glance
+
+| Feature | Scope and lifetime | Automatically sent to server? | Common use |
 | --- | --- | --- | --- |
-| Where it is stored / scope | In the browser; sent to matching domains and paths | In the browser for one origin (scheme, host, and port) | In the browser for one origin and one tab session |
-| Typical size | Small, about 4 KB per cookie | Larger, often around 5-10 MB per origin | Similar to `localStorage`; browser quotas vary |
-| Lifetime | Session cookie or until its configured expiration | No built-in expiration; remains until removed or browser data is cleared | Usually cleared when its tab closes; survives reloads |
-| Sent with HTTP requests | Automatically when cookie domain, path, security, and `SameSite` rules match | No | No |
-| JavaScript access | Usually, unless marked `HttpOnly` | Yes | Yes |
-| Common uses | Authentication, server sessions, and preferences needed by the server | Persistent client-side preferences and cached UI state | Temporary, tab-specific state such as a multi-step form |
+| Cookies | Host/path and cookie attributes; session or configured expiry | Yes, when matching cookie rules apply | Server-managed sessions and preferences needed by the server |
+| `localStorage` | One origin; persists until removed or cleared | No | Persistent client-side preferences |
+| `sessionStorage` | One origin and browsing tab; normally cleared when the tab closes | No | Temporary tab-specific state |
 
-## Cookies
+Treat browser data as untrusted input. Do not store sensitive credentials or tokens in client-readable storage. Configure server-managed authentication cookies with suitable `HttpOnly`, `Secure`, and `SameSite` attributes.
 
-Cookies are small name/value pairs stored by the browser. The browser can attach matching cookies to requests automatically, which makes them useful when a server needs to recognize a user or receive a preference on each request.
+## Simple Playwright cookie example
 
-Cookies have attributes that control their behavior:
+```ts
+await page.goto('https://example.test')
+await page.context().addCookies([{
+  name: 'theme',
+  value: 'dark',
+  domain: 'example.test',
+  path: '/',
+  secure: true,
+  httpOnly: false,
+  sameSite: 'Lax',
+}])
 
-- `Expires` or `Max-Age` controls how long a persistent cookie lasts. Without either, it is generally a session cookie.
-- `Domain` and `Path` control which hosts and routes receive the cookie.
-- `Secure` restricts the cookie to HTTPS requests.
-- `HttpOnly` prevents page JavaScript from reading the cookie, which helps protect session cookies from theft through cross-site scripting (XSS).
-- `SameSite` limits when cookies are sent in cross-site contexts and helps reduce cross-site request forgery (CSRF).
-
-Cookies are sent automatically when their rules match, so they add data to requests. Keep them small and configure security attributes carefully. A JavaScript-created cookie cannot be marked `HttpOnly`; that attribute must be set by the server.
-
-## `localStorage`
-
-`localStorage` stores string key/value pairs for an origin. Data remains after page reloads and browser restarts until the application or user clears it. The browser does not automatically attach this data to HTTP requests; application code must read and send it if needed.
-
-```js
-localStorage.setItem('theme', 'dark')
-const theme = localStorage.getItem('theme')
-localStorage.removeItem('theme')
+const cookies = await page.context().cookies('https://example.test')
+expect(cookies.some(cookie => cookie.name === 'theme')).toBe(true)
 ```
 
-It is useful for non-sensitive preferences and persistent UI state. Because page JavaScript can read it, do not store session identifiers, passwords, or other sensitive secrets in `localStorage`.
+Cookie domain, path, and security attributes must match the target host and environment. A JavaScript-created cookie cannot be `HttpOnly`; that flag is set by the server.
 
-## `sessionStorage`
-
-`sessionStorage` also stores string key/value pairs, but it is scoped to both the origin and the current tab's browsing context. It survives reloads in that tab, but is normally cleared when the tab or window closes. Separate tabs generally have separate session storage.
-
-```js
-sessionStorage.setItem('checkoutStep', 'shipping')
-const step = sessionStorage.getItem('checkoutStep')
-sessionStorage.removeItem('checkoutStep')
-```
-
-Use it for temporary, tab-specific state, such as progress through a multi-step form. Like `localStorage`, it is readable by page JavaScript and is not automatically sent to the server.
-
-## Choosing One
-
-- Use a cookie when the server needs the value on matching requests. For authentication, prefer server-managed cookies with appropriate `HttpOnly`, `Secure`, and `SameSite` settings.
-- Use `localStorage` when client-side state should persist across browser restarts and does not need to be sent automatically with requests.
-- Use `sessionStorage` when client-side state should survive reloads but remain limited to a single tab session.
-
-Storage quotas and some lifetime details vary by browser. All three mechanisms are client-side storage and should be treated as untrusted input by the server.
-
-## Checking Storage with Playwright
-
-Cookies are managed by the browser context, while Web Storage is accessed from the page:
+## Save and restore cookies
 
 ```ts
 const cookies = await page.context().cookies()
-const localValue = await page.evaluate(() => localStorage.getItem('theme'))
-const sessionValue = await page.evaluate(() => sessionStorage.getItem('checkoutStep'))
+await fs.promises.writeFile(cookiePath, JSON.stringify(cookies, null, 2))
+
+const savedCookies = JSON.parse(await fs.promises.readFile(cookiePath, 'utf8'))
+const context = await browser.newContext()
+await context.addCookies(savedCookies)
 ```
 
-Clear them during test setup when a test needs a clean state:
+Restore cookies into a new context before navigating to the authenticated page. If cookies are committed or shared, they can grant account access: keep authentication state out of source control, use a test-only account, and restrict file permissions. Tests that use a file produced by another test are order-dependent; prefer Playwright `storageState` setup projects or create the state in a dedicated setup step.
+
+## Inspect or clear state
 
 ```ts
+const currentCookies = await page.context().cookies()
 await page.context().clearCookies()
+
+const theme = await page.evaluate(() => localStorage.getItem('theme'))
 await page.evaluate(() => {
-	localStorage.clear()
-	sessionStorage.clear()
+  localStorage.clear()
+  sessionStorage.clear()
 })
 ```
 
-Run the Web Storage code after navigating to the target origin, since storage is origin-scoped.
+Web Storage operations must run on the target origin. Clearing storage in a page affects that origin's storage in the current browser context.
+
+## Running the examples
+
+```bash
+npx playwright test tests/StorageMechanism/cookies.spec.ts
+npx playwright test tests/StorageMechanism/working_with_real_website_cookies.spec.ts
+```
+
+The paired login examples rely on live demo sites and write files under `storageData/`; ensure the output location exists and keep generated session files private.
